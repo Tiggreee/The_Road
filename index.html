@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>"The Road" A JavaScript Adventure</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body data-theme="dark">
+    <div class="game-container">
+        <!-- Top Navigation Bar -->
+        <nav class="top-nav">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <span class="nav-icon">⚔️</span>
+                    <span class="nav-title">The Road</span>
+                </div>
+                <div class="nav-links">
+                    <a href="https://medium.com/@stephenthecurt/33-fundamentals-every-javascript-developer-should-know-13dd720a90d1" target="_blank" class="nav-link">
+                        📖 Artículo Original
+                    </a>
+                    <a href="https://github.com/leonardomso/33-js-concepts" target="_blank" class="nav-link">
+                        📚 Repositorio GitHub
+                    </a>
+                    <button class="nav-link" onclick="toggleTheme()">
+                        🌙 Cambiar Tema
+                    </button>
+                    <button class="nav-link" onclick="testScroll()" style="background: #ff6b6b;">
+                        🧪 Test Scroll
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Header/Navigation -->
+        <header class="game-header">
+            <div class="player-info">
+                <div class="player-avatar">🧙‍♂️</div>
+                <div class="player-stats">
+                    <div class="stat">Nivel: <span id="current-level">1</span></div>
+                    <div class="stat">XP: <span id="current-xp">0</span></div>
+                    <div class="stat">Conceptos: <span id="concepts-learned">0</span>/33</div>
+                </div>
+            </div>
+            <div class="game-title">
+                <h1>"The Road" A JavaScript Adventure</h1>
+                <p>Los 33 Conceptos que Todo Programador Debe Conocer</p>
+                <div class="credits">
+                    <p>Basado en el artículo de <a href="https://medium.com/@stephenthecurt/33-fundamentals-every-javascript-developer-should-know-13dd720a90d1" target="_blank">Stephen Curtis</a></p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Game Area -->
+        <main class="game-world">
+            <div class="levels-container">
+                <!-- Level 1: Variables -->
+                <section class="level" id="level-1">
+                    <!-- Page 1: Theory/Reading -->
+                    <div class="level-page theory-page">
+                        <div class="level-header">
+                            <h2>Nivel 1: Variables</h2>
+                            <div class="level-badge">Básico</div>
+                        </div>
+                        
+                        <div class="reading-section">
+                            <h3>📖 Lectura</h3>
+                            <div class="content-card">
+                                <p>Las variables son contenedores que almacenan valores. En JavaScript, puedes declarar variables usando <code>var</code>, <code>let</code> o <code>const</code>.</p>
+                                
+                                <div class="code-example">
+                                    <pre><code>let nombre = "JavaScript";
+const PI = 3.14159;
+var edad = 25;</code></pre>
+                                </div>
+                                
+                                <h4>Tipos de declaración:</h4>
+                                <ul>
+                                    <li><strong>let:</strong> Para variables que pueden cambiar su valor</li>
+                                    <li><strong>const:</strong> Para valores constantes que no cambian</li>
+                                    <li><strong>var:</strong> Forma antigua (evitar usar en código moderno)</li>
+                                </ul>
+                                
+                                <h4>Reglas importantes:</h4>
+                                <ul>
+                                    <li>Los nombres de variables son sensibles a mayúsculas y minúsculas</li>
+                                    <li>Pueden contener letras, números, guiones bajos y símbolos de dólar</li>
+                                    <li>No pueden empezar con números</li>
+                                    <li>No pueden usar palabras reservadas de JavaScript</li>
+                                </ul>
+                                
+                                <div class="tip-box">
+                                    <h4>💡 Consejo</h4>
+                                    <p>Usa nombres descriptivos para tus variables. En lugar de <code>x</code>, usa <code>edad</code> o <code>nombreUsuario</code>.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigateLevel(-1)">⬅️ Nivel Anterior</button>
+                            <div class="page-indicator">Página 1 de 2 | Nivel 1/10</div>
+                            <button class="page-nav-btn" onclick="navigatePage(1)">Ejercicio ➡️</button>
+                        </div>
+                    </div>
+
+                    <!-- Page 2: Exercise -->
+                    <div class="level-page exercise-page">
+                        <div class="level-header">
+                            <h2>Nivel 1: Variables - Ejercicio</h2>
+                            <div class="level-badge">Práctica</div>
+                        </div>
+                        
+                        <div class="exercise-section">
+                            <h3>⚔️ Ejercicio</h3>
+                            <div class="content-card">
+                                <p>Crea variables para tu personaje RPG. Usa diferentes tipos de declaración:</p>
+                                
+                                <div class="exercise-instructions">
+                                    <h4>Instrucciones:</h4>
+                                    <ol>
+                                        <li>Crea una variable <code>heroName</code> con tu nombre usando <code>let</code></li>
+                                        <li>Crea una variable <code>heroLevel</code> con el valor 1 usando <code>const</code></li>
+                                        <li>Crea una variable <code>heroClass</code> con tu clase favorita (guerrero, mago, etc.)</li>
+                                        <li>Muestra todas las variables en la consola</li>
+                                    </ol>
+                                </div>
+                                
+                                <div class="code-editor">
+                                    <div class="editor-header">
+                                        <span>Editor de Código</span>
+                                        <button class="run-btn" onclick="runCode(1)">▶️ Ejecutar</button>
+                                    </div>
+                                    <textarea id="editor-1" class="code-textarea" placeholder="// Escribe tu código aquí
+let heroName = 'Tu Nombre';
+const heroLevel = 1;
+let heroClass = 'Guerrero';
+
+// Muestra los valores
+console.log('Nombre del héroe:', heroName);
+console.log('Nivel del héroe:', heroLevel);
+console.log('Clase del héroe:', heroClass);"></textarea>
+                                </div>
+
+                                <div class="console-output">
+                                    <div class="console-header">
+                                        <span>Consola</span>
+                                        <button class="clear-btn" onclick="clearConsole(1)">🗑️ Limpiar</button>
+                                    </div>
+                                    <div id="console-1" class="console-content"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigatePage(-1)">⬅️ Teoría</button>
+                            <div class="page-indicator">Página 2 de 2 | Nivel 1/10</div>
+                            <button class="page-nav-btn" onclick="navigateLevel(1)">Siguiente Nivel ➡️</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Level 2: Funciones -->
+                <section class="level" id="level-2">
+                    <!-- Page 1: Theory -->
+                    <div class="level-page theory-page">
+                        <div class="level-header">
+                            <h2>Nivel 2: Funciones</h2>
+                            <div class="level-badge">Básico</div>
+                        </div>
+                        
+                        <div class="reading-section">
+                            <h3>📖 Lectura</h3>
+                            <div class="content-card">
+                                <p>Las funciones son bloques de código reutilizables que pueden recibir parámetros y retornar valores.</p>
+                                
+                                <div class="code-example">
+                                    <pre><code>function saludar(nombre) {
+    return `¡Hola, ${nombre}!`;
+}
+
+// Función flecha (arrow function)
+const sumar = (a, b) => a + b;</code></pre>
+                                </div>
+                                
+                                <h4>Tipos de funciones:</h4>
+                                <ul>
+                                    <li><strong>Declaración:</strong> <code>function nombre() {}</code></li>
+                                    <li><strong>Expresión:</strong> <code>const nombre = function() {}</code></li>
+                                    <li><strong>Arrow function:</strong> <code>const nombre = () => {}</code></li>
+                                    <li><strong>Método:</strong> Función dentro de un objeto</li>
+                                </ul>
+                                
+                                <div class="tip-box">
+                                    <h4>💡 Consejo</h4>
+                                    <p>Las arrow functions son más concisas y no tienen su propio <code>this</code>. Usa nombres descriptivos para tus funciones.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigateLevel(-1)">⬅️ Nivel Anterior</button>
+                            <div class="page-indicator">Página 1 de 2 | Nivel 2/10</div>
+                            <button class="page-nav-btn" onclick="navigatePage(1)">Ejercicio ➡️</button>
+                        </div>
+                    </div>
+
+                    <!-- Page 2: Exercise -->
+                    <div class="level-page exercise-page">
+                        <div class="level-header">
+                            <h2>Nivel 2: Funciones - Ejercicio</h2>
+                            <div class="level-badge">Práctica</div>
+                        </div>
+                        
+                        <div class="exercise-section">
+                            <h3>⚔️ Ejercicio</h3>
+                            <div class="content-card">
+                                <p>Crea funciones para tu personaje RPG:</p>
+                                
+                                <div class="exercise-instructions">
+                                    <h4>Instrucciones:</h4>
+                                    <ol>
+                                        <li>Crea una función <code>atacar</code> que reciba el nombre del enemigo</li>
+                                        <li>Crea una arrow function <code>curar</code> que reciba la cantidad de HP</li>
+                                        <li>Crea una función que calcule el daño basado en el nivel</li>
+                                        <li>Prueba todas las funciones</li>
+                                    </ol>
+                                </div>
+                                
+                                <div class="code-editor">
+                                    <div class="editor-header">
+                                        <span>Editor de Código</span>
+                                        <button class="run-btn" onclick="runCode(2)">▶️ Ejecutar</button>
+                                    </div>
+                                    <textarea id="editor-2" class="code-textarea" placeholder="// Función de ataque
+function atacar(enemigo) {
+    return `¡Atacando a ${enemigo}!`;
+}
+
+// Arrow function para curar
+const curar = (hp) => `Curando ${hp} puntos de vida`;
+
+// Función para calcular daño
+function calcularDano(nivel, arma) {
+    return nivel * 10 + arma.length;
+}
+
+// Prueba las funciones
+console.log(atacar('Dragón'));
+console.log(curar(50));
+console.log('Daño:', calcularDano(5, 'Espada'));"></textarea>
+                                </div>
+
+                                <div class="console-output">
+                                    <div class="console-header">
+                                        <span>Consola</span>
+                                        <button class="clear-btn" onclick="clearConsole(2)">🗑️ Limpiar</button>
+                                    </div>
+                                    <div id="console-2" class="console-content"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigatePage(-1)">⬅️ Teoría</button>
+                            <div class="page-indicator">Página 2 de 2 | Nivel 2/10</div>
+                            <button class="page-nav-btn" onclick="navigateLevel(1)">Siguiente Nivel ➡️</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Level 3: Arrays -->
+                <section class="level" id="level-3">
+                    <!-- Page 1: Theory -->
+                    <div class="level-page theory-page">
+                        <div class="level-header">
+                            <h2>Nivel 3: Arrays</h2>
+                            <div class="level-badge">Básico</div>
+                        </div>
+                        
+                        <div class="reading-section">
+                            <h3>📖 Lectura</h3>
+                            <div class="content-card">
+                                <p>Los arrays son estructuras de datos que almacenan múltiples valores en una sola variable. Son fundamentales para manejar colecciones de datos.</p>
+                                
+                                <div class="code-example">
+                                    <pre><code>let inventario = ['Espada', 'Escudo', 'Poción'];
+let numeros = [1, 2, 3, 4, 5];
+let mixto = ['texto', 42, true, null];</code></pre>
+                                </div>
+                                
+                                <h4>Métodos importantes:</h4>
+                                <ul>
+                                    <li><strong>push():</strong> Agrega elementos al final</li>
+                                    <li><strong>pop():</strong> Remueve el último elemento</li>
+                                    <li><strong>shift():</strong> Remueve el primer elemento</li>
+                                    <li><strong>unshift():</strong> Agrega elementos al inicio</li>
+                                    <li><strong>splice():</strong> Modifica elementos en cualquier posición</li>
+                                </ul>
+                                
+                                <div class="tip-box">
+                                    <h4>💡 Consejo</h4>
+                                    <p>Los arrays en JavaScript pueden contener elementos de diferentes tipos. Usa <code>Array.isArray()</code> para verificar si una variable es un array.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigateLevel(-1)">⬅️ Nivel Anterior</button>
+                            <div class="page-indicator">Página 1 de 2 | Nivel 3/10</div>
+                            <button class="page-nav-btn" onclick="navigatePage(1)">Ejercicio ➡️</button>
+                        </div>
+                    </div>
+
+                    <!-- Page 2: Exercise -->
+                    <div class="level-page exercise-page">
+                        <div class="level-header">
+                            <h2>Nivel 3: Arrays - Ejercicio</h2>
+                            <div class="level-badge">Práctica</div>
+                        </div>
+                        
+                        <div class="exercise-section">
+                            <h3>⚔️ Ejercicio</h3>
+                            <div class="content-card">
+                                <p>Crea y manipula arrays para tu inventario de RPG:</p>
+                                
+                                <div class="exercise-instructions">
+                                    <h4>Instrucciones:</h4>
+                                    <ol>
+                                        <li>Crea un array llamado <code>inventario</code> con algunos items</li>
+                                        <li>Agrega un nuevo item usando <code>push()</code></li>
+                                        <li>Remueve el último item usando <code>pop()</code></li>
+                                        <li>Muestra el inventario en la consola</li>
+                                    </ol>
+                                </div>
+                                
+                                <div class="code-editor">
+                                    <div class="editor-header">
+                                        <span>Editor de Código</span>
+                                        <button class="run-btn" onclick="runCode(3)">▶️ Ejecutar</button>
+                                    </div>
+                                    <textarea id="editor-3" class="code-textarea" placeholder="// Crea tu inventario
+let inventario = ['Espada', 'Escudo', 'Poción'];
+
+// Agrega un nuevo item
+inventario.push('Arco');
+
+// Remueve el último item
+inventario.pop();
+
+// Muestra el inventario
+console.log('Inventario:', inventario);
+console.log('Número de items:', inventario.length);"></textarea>
+                                </div>
+
+                                <div class="console-output">
+                                    <div class="console-header">
+                                        <span>Consola</span>
+                                        <button class="clear-btn" onclick="clearConsole(3)">🗑️ Limpiar</button>
+                                    </div>
+                                    <div id="console-3" class="console-content"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigatePage(-1)">⬅️ Teoría</button>
+                            <div class="page-indicator">Página 2 de 2 | Nivel 3/10</div>
+                            <button class="page-nav-btn" onclick="navigateLevel(1)">Siguiente Nivel ➡️</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Level 4: Objetos -->
+                <section class="level" id="level-4">
+                    <!-- Page 1: Theory -->
+                    <div class="level-page theory-page">
+                        <div class="level-header">
+                            <h2>Nivel 4: Objetos</h2>
+                            <div class="level-badge">Básico</div>
+                        </div>
+                        
+                        <div class="reading-section">
+                            <h3>📖 Lectura</h3>
+                            <div class="content-card">
+                                <p>Los objetos son estructuras de datos que almacenan pares clave-valor. Son fundamentales para representar entidades complejas.</p>
+                                
+                                <div class="code-example">
+                                    <pre><code>let personaje = {
+    nombre: 'Aragorn',
+    clase: 'Guerrero',
+    nivel: 15,
+    salud: 100,
+    atacar: function() {
+        return '¡Ataque con espada!';
+    }
+};</code></pre>
+                                </div>
+                                
+                                <h4>Acceso a propiedades:</h4>
+                                <ul>
+                                    <li><strong>Notación de punto:</strong> <code>personaje.nombre</code></li>
+                                    <li><strong>Notación de corchetes:</strong> <code>personaje['nombre']</code></li>
+                                    <li><strong>Métodos:</strong> Funciones dentro del objeto</li>
+                                </ul>
+                                
+                                <div class="tip-box">
+                                    <h4>💡 Consejo</h4>
+                                    <p>Los objetos son la base de la programación orientada a objetos en JavaScript. Usa <code>Object.keys()</code> para obtener todas las claves.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigateLevel(-1)">⬅️ Nivel Anterior</button>
+                            <div class="page-indicator">Página 1 de 2 | Nivel 4/10</div>
+                            <button class="page-nav-btn" onclick="navigatePage(1)">Ejercicio ➡️</button>
+                        </div>
+                    </div>
+
+                    <!-- Page 2: Exercise -->
+                    <div class="level-page exercise-page">
+                        <div class="level-header">
+                            <h2>Nivel 4: Objetos - Ejercicio</h2>
+                            <div class="level-badge">Práctica</div>
+                        </div>
+                        
+                        <div class="exercise-section">
+                            <h3>⚔️ Ejercicio</h3>
+                            <div class="content-card">
+                                <p>Crea un objeto para tu personaje RPG:</p>
+                                
+                                <div class="exercise-instructions">
+                                    <h4>Instrucciones:</h4>
+                                    <ol>
+                                        <li>Crea un objeto <code>personaje</code> con propiedades básicas</li>
+                                        <li>Agrega un método <code>saludar()</code> que retorne un mensaje</li>
+                                        <li>Accede a las propiedades usando ambas notaciones</li>
+                                        <li>Muestra la información en la consola</li>
+                                    </ol>
+                                </div>
+                                
+                                <div class="code-editor">
+                                    <div class="editor-header">
+                                        <span>Editor de Código</span>
+                                        <button class="run-btn" onclick="runCode(4)">▶️ Ejecutar</button>
+                                    </div>
+                                    <textarea id="editor-4" class="code-textarea" placeholder="// Crea tu personaje
+let personaje = {
+    nombre: 'Tu Nombre',
+    clase: 'Mago',
+    nivel: 1,
+    salud: 50,
+    saludar: function() {
+        return `¡Hola! Soy ${this.nombre}, un ${this.clase} nivel ${this.nivel}!`;
+    }
+};
+
+// Accede a propiedades
+console.log('Nombre:', personaje.nombre);
+console.log('Clase:', personaje['clase']);
+
+// Usa el método
+console.log(personaje.saludar());"></textarea>
+                                </div>
+
+                                <div class="console-output">
+                                    <div class="console-header">
+                                        <span>Consola</span>
+                                        <button class="clear-btn" onclick="clearConsole(4)">🗑️ Limpiar</button>
+                                    </div>
+                                    <div id="console-4" class="console-content"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigatePage(-1)">⬅️ Teoría</button>
+                            <div class="page-indicator">Página 2 de 2 | Nivel 4/10</div>
+                            <button class="page-nav-btn" onclick="navigateLevel(1)">Siguiente Nivel ➡️</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Level 5: Scope -->
+                <section class="level" id="level-5">
+                    <!-- Page 1: Theory -->
+                    <div class="level-page theory-page">
+                        <div class="level-header">
+                            <h2>Nivel 5: Scope</h2>
+                            <div class="level-badge">Intermedio</div>
+                        </div>
+                        
+                        <div class="reading-section">
+                            <h3>📖 Lectura</h3>
+                            <div class="content-card">
+                                <p>El scope (alcance) determina dónde las variables son accesibles en tu código. JavaScript tiene scope global, de función y de bloque.</p>
+                                
+                                <div class="code-example">
+                                    <pre><code>let globalVar = 'Soy global';
+
+function miFuncion() {
+    let localVar = 'Soy local';
+    console.log(globalVar); // ✅ Accesible
+    console.log(localVar);  // ✅ Accesible
+}
+
+console.log(globalVar); // ✅ Accesible
+console.log(localVar);  // ❌ Error: no definida</code></pre>
+                                </div>
+                                
+                                <h4>Tipos de scope:</h4>
+                                <ul>
+                                    <li><strong>Global:</strong> Variables accesibles en todo el código</li>
+                                    <li><strong>Función:</strong> Variables solo accesibles dentro de la función</li>
+                                    <li><strong>Bloque:</strong> Variables solo accesibles dentro de bloques {}</li>
+                                </ul>
+                                
+                                <div class="tip-box">
+                                    <h4>💡 Consejo</h4>
+                                    <p>Usa <code>let</code> y <code>const</code> para evitar problemas de hoisting. Las variables declaradas con <code>var</code> tienen scope de función, no de bloque.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigateLevel(-1)">⬅️ Nivel Anterior</button>
+                            <div class="page-indicator">Página 1 de 2</div>
+                            <button class="page-nav-btn" onclick="navigatePage(1)">Ejercicio ➡️</button>
+                        </div>
+                    </div>
+
+                    <!-- Page 2: Exercise -->
+                    <div class="level-page exercise-page">
+                        <div class="level-header">
+                            <h2>Nivel 5: Scope - Ejercicio</h2>
+                            <div class="level-badge">Práctica</div>
+                        </div>
+                        
+                        <div class="exercise-section">
+                            <h3>⚔️ Ejercicio</h3>
+                            <div class="content-card">
+                                <p>Experimenta con diferentes tipos de scope:</p>
+                                
+                                <div class="exercise-instructions">
+                                    <h4>Instrucciones:</h4>
+                                    <ol>
+                                        <li>Crea una variable global <code>nombreJugador</code></li>
+                                        <li>Crea una función que declare una variable local</li>
+                                        <li>Usa un bloque con <code>let</code> para crear una variable de bloque</li>
+                                        <li>Prueba acceder a las variables desde diferentes scopes</li>
+                                    </ol>
+                                </div>
+                                
+                                <div class="code-editor">
+                                    <div class="editor-header">
+                                        <span>Editor de Código</span>
+                                        <button class="run-btn" onclick="runCode(5)">▶️ Ejecutar</button>
+                                    </div>
+                                    <textarea id="editor-5" class="code-textarea" placeholder="// Variable global
+let nombreJugador = 'Aragorn';
+
+function miFuncion() {
+    let variableLocal = 'Soy local';
+    console.log('Dentro de la función:', nombreJugador);
+    console.log('Variable local:', variableLocal);
+}
+
+// Bloque con let
+{
+    let variableBloque = 'Soy de bloque';
+    console.log('Dentro del bloque:', variableBloque);
+}
+
+miFuncion();
+console.log('Global:', nombreJugador);"></textarea>
+                                </div>
+
+                                <div class="console-output">
+                                    <div class="console-header">
+                                        <span>Consola</span>
+                                        <button class="clear-btn" onclick="clearConsole(5)">🗑️ Limpiar</button>
+                                    </div>
+                                    <div id="console-5" class="console-content"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigatePage(-1)">⬅️ Teoría</button>
+                            <div class="page-indicator">Página 2 de 2</div>
+                            <button class="page-nav-btn" onclick="navigateLevel(1)">Siguiente Nivel ➡️</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Level 6: Hoisting -->
+                <section class="level" id="level-6">
+                    <!-- Page 1: Theory -->
+                    <div class="level-page theory-page">
+                        <div class="level-header">
+                            <h2>Nivel 6: Hoisting</h2>
+                            <div class="level-badge">Intermedio</div>
+                        </div>
+                        
+                        <div class="reading-section">
+                            <h3>📖 Lectura</h3>
+                            <div class="content-card">
+                                <p>El hoisting es el comportamiento de JavaScript de mover declaraciones al inicio de su scope antes de la ejecución del código.</p>
+                                
+                                <div class="code-example">
+                                    <pre><code>// Esto funciona debido al hoisting
+console.log(miVariable); // undefined
+var miVariable = 'Hola';
+
+// Esto NO funciona
+console.log(miLet); // Error
+let miLet = 'Hola';</code></pre>
+                                </div>
+                                
+                                <h4>Comportamiento del hoisting:</h4>
+                                <ul>
+                                    <li><strong>var:</strong> Se eleva la declaración, no la inicialización</li>
+                                    <li><strong>let/const:</strong> Se elevan pero no se inicializan (Temporal Dead Zone)</li>
+                                    <li><strong>funciones:</strong> Se elevan completamente</li>
+                                </ul>
+                                
+                                <div class="tip-box">
+                                    <h4>💡 Consejo</h4>
+                                    <p>Evita el hoisting declarando todas las variables al inicio de su scope. Usa <code>let</code> y <code>const</code> para un comportamiento más predecible.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigateLevel(-1)">⬅️ Nivel Anterior</button>
+                            <div class="page-indicator">Página 1 de 2</div>
+                            <button class="page-nav-btn" onclick="navigatePage(1)">Ejercicio ➡️</button>
+                        </div>
+                    </div>
+
+                    <!-- Page 2: Exercise -->
+                    <div class="level-page exercise-page">
+                        <div class="level-header">
+                            <h2>Nivel 6: Hoisting - Ejercicio</h2>
+                            <div class="level-badge">Práctica</div>
+                        </div>
+                        
+                        <div class="exercise-section">
+                            <h3>⚔️ Ejercicio</h3>
+                            <div class="content-card">
+                                <p>Experimenta con el comportamiento del hoisting:</p>
+                                
+                                <div class="exercise-instructions">
+                                    <h4>Instrucciones:</h4>
+                                    <ol>
+                                        <li>Prueba acceder a una variable <code>var</code> antes de declararla</li>
+                                        <li>Prueba acceder a una variable <code>let</code> antes de declararla</li>
+                                        <li>Declara una función y llámala antes de su declaración</li>
+                                        <li>Observa las diferencias en el comportamiento</li>
+                                    </ol>
+                                </div>
+                                
+                                <div class="code-editor">
+                                    <div class="editor-header">
+                                        <span>Editor de Código</span>
+                                        <button class="run-btn" onclick="runCode(6)">▶️ Ejecutar</button>
+                                    </div>
+                                    <textarea id="editor-6" class="code-textarea" placeholder="// Hoisting con var
+console.log('var antes de declarar:', miVar);
+var miVar = 'Variable con var';
+
+// Hoisting con let (comentado para evitar error)
+// console.log('let antes de declarar:', miLet);
+let miLet = 'Variable con let';
+
+// Hoisting con función
+miFuncion();
+function miFuncion() {
+    console.log('Función llamada antes de declarar');
+}
+
+console.log('Después de declarar var:', miVar);
+console.log('Después de declarar let:', miLet);"></textarea>
+                                </div>
+
+                                <div class="console-output">
+                                    <div class="console-header">
+                                        <span>Consola</span>
+                                        <button class="clear-btn" onclick="clearConsole(6)">🗑️ Limpiar</button>
+                                    </div>
+                                    <div id="console-6" class="console-content"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigatePage(-1)">⬅️ Teoría</button>
+                            <div class="page-indicator">Página 2 de 2</div>
+                            <button class="page-nav-btn" onclick="navigateLevel(1)">Siguiente Nivel ➡️</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Level 7: Closures -->
+                <section class="level" id="level-7">
+                    <!-- Page 1: Theory -->
+                    <div class="level-page theory-page">
+                        <div class="level-header">
+                            <h2>Nivel 7: Closures</h2>
+                            <div class="level-badge">Avanzado</div>
+                        </div>
+                        
+                        <div class="reading-section">
+                            <h3>📖 Lectura</h3>
+                            <div class="content-card">
+                                <p>Un closure es una función que tiene acceso a variables de su scope exterior, incluso después de que la función exterior haya terminado de ejecutarse.</p>
+                                
+                                <div class="code-example">
+                                    <pre><code>function crearContador() {
+    let contador = 0;
+    
+    return function() {
+        contador++;
+        return contador;
+    };
+}
+
+let miContador = crearContador();
+console.log(miContador()); // 1
+console.log(miContador()); // 2</code></pre>
+                                </div>
+                                
+                                <h4>Características de los closures:</h4>
+                                <ul>
+                                    <li><strong>Acceso a variables externas:</strong> Mantienen referencia a variables del scope padre</li>
+                                    <li><strong>Estado privado:</strong> Permiten crear variables "privadas"</li>
+                                    <li><strong>Memoria:</strong> Las variables se mantienen en memoria mientras exista la referencia</li>
+                                </ul>
+                                
+                                <div class="tip-box">
+                                    <h4>💡 Consejo</h4>
+                                    <p>Los closures son útiles para crear funciones con estado, callbacks y módulos. Ten cuidado con las fugas de memoria si no liberas las referencias.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigateLevel(-1)">⬅️ Nivel Anterior</button>
+                            <div class="page-indicator">Página 1 de 2</div>
+                            <button class="page-nav-btn" onclick="navigatePage(1)">Ejercicio ➡️</button>
+                        </div>
+                    </div>
+
+                    <!-- Page 2: Exercise -->
+                    <div class="level-page exercise-page">
+                        <div class="level-header">
+                            <h2>Nivel 7: Closures - Ejercicio</h2>
+                            <div class="level-badge">Práctica</div>
+                        </div>
+                        
+                        <div class="exercise-section">
+                            <h3>⚔️ Ejercicio</h3>
+                            <div class="content-card">
+                                <p>Crea closures para manejar el estado de tu personaje:</p>
+                                
+                                <div class="exercise-instructions">
+                                    <h4>Instrucciones:</h4>
+                                    <ol>
+                                        <li>Crea una función que genere un contador de experiencia</li>
+                                        <li>Crea una función que maneje el inventario privado</li>
+                                        <li>Prueba acceder a las variables "privadas" desde fuera</li>
+                                        <li>Observa cómo se mantiene el estado</li>
+                                    </ol>
+                                </div>
+                                
+                                <div class="code-editor">
+                                    <div class="editor-header">
+                                        <span>Editor de Código</span>
+                                        <button class="run-btn" onclick="runCode(7)">▶️ Ejecutar</button>
+                                    </div>
+                                    <textarea id="editor-7" class="code-textarea" placeholder="// Closure para contador de XP
+function crearContadorXP() {
+    let xp = 0;
+    
+    return {
+        ganarXP: function(cantidad) {
+            xp += cantidad;
+            return xp;
+        },
+        obtenerXP: function() {
+            return xp;
+        }
+    };
+}
+
+let miXP = crearContadorXP();
+console.log('XP inicial:', miXP.obtenerXP());
+console.log('Ganando 50 XP:', miXP.ganarXP(50));
+console.log('XP actual:', miXP.obtenerXP());
+
+// Closure para inventario privado
+function crearInventario() {
+    let items = [];
+    
+    return {
+        agregar: function(item) {
+            items.push(item);
+            return `Agregado: ${item}`;
+        },
+        listar: function() {
+            return items;
+        }
+    };
+}
+
+let inventario = crearInventario();
+console.log(inventario.agregar('Espada'));
+console.log(inventario.agregar('Escudo'));
+console.log('Inventario:', inventario.listar());"></textarea>
+                                </div>
+
+                                <div class="console-output">
+                                    <div class="console-header">
+                                        <span>Consola</span>
+                                        <button class="clear-btn" onclick="clearConsole(7)">🗑️ Limpiar</button>
+                                    </div>
+                                    <div id="console-7" class="console-content"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigatePage(-1)">⬅️ Teoría</button>
+                            <div class="page-indicator">Página 2 de 2</div>
+                            <button class="page-nav-btn" onclick="navigateLevel(1)">Siguiente Nivel ➡️</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Level 8: Callbacks -->
+                <section class="level" id="level-8">
+                    <!-- Page 1: Theory -->
+                    <div class="level-page theory-page">
+                        <div class="level-header">
+                            <h2>Nivel 8: Callbacks</h2>
+                            <div class="level-badge">Intermedio</div>
+                        </div>
+                        
+                        <div class="reading-section">
+                            <h3>📖 Lectura</h3>
+                            <div class="content-card">
+                                <p>Un callback es una función que se pasa como argumento a otra función y se ejecuta después de que la función principal haya terminado.</p>
+                                
+                                <div class="code-example">
+                                    <pre><code>function procesarDatos(datos, callback) {
+    console.log('Procesando datos...');
+    let resultado = datos.toUpperCase();
+    callback(resultado);
+}
+
+function mostrarResultado(resultado) {
+    console.log('Resultado:', resultado);
+}
+
+procesarDatos('hola mundo', mostrarResultado);</code></pre>
+                                </div>
+                                
+                                <h4>Usos comunes de callbacks:</h4>
+                                <ul>
+                                    <li><strong>Operaciones asíncronas:</strong> Manejo de respuestas de APIs</li>
+                                    <li><strong>Eventos:</strong> Respuesta a clicks, teclas, etc.</li>
+                                    <li><strong>Filtros y mapeo:</strong> Personalización de operaciones</li>
+                                    <li><strong>Timers:</strong> Ejecución retardada</li>
+                                </ul>
+                                
+                                <div class="tip-box">
+                                    <h4>💡 Consejo</h4>
+                                    <p>Los callbacks son fundamentales para JavaScript asíncrono. Ten cuidado con el "callback hell" - usa Promises o async/await para operaciones complejas.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigateLevel(-1)">⬅️ Nivel Anterior</button>
+                            <div class="page-indicator">Página 1 de 2</div>
+                            <button class="page-nav-btn" onclick="navigatePage(1)">Ejercicio ➡️</button>
+                        </div>
+                    </div>
+
+                    <!-- Page 2: Exercise -->
+                    <div class="level-page exercise-page">
+                        <div class="level-header">
+                            <h2>Nivel 8: Callbacks - Ejercicio</h2>
+                            <div class="level-badge">Práctica</div>
+                        </div>
+                        
+                        <div class="exercise-section">
+                            <h3>⚔️ Ejercicio</h3>
+                            <div class="content-card">
+                                <p>Crea funciones que usen callbacks para simular operaciones de juego:</p>
+                                
+                                <div class="exercise-instructions">
+                                    <h4>Instrucciones:</h4>
+                                    <ol>
+                                        <li>Crea una función que simule cargar datos de un personaje</li>
+                                        <li>Usa callbacks para manejar el éxito y error</li>
+                                        <li>Crea una función que filtre un array usando callback</li>
+                                        <li>Simula un timer con callback</li>
+                                    </ol>
+                                </div>
+                                
+                                <div class="code-editor">
+                                    <div class="editor-header">
+                                        <span>Editor de Código</span>
+                                        <button class="run-btn" onclick="runCode(8)">▶️ Ejecutar</button>
+                                    </div>
+                                    <textarea id="editor-8" class="code-textarea" placeholder="// Simular carga de datos con callback
+function cargarPersonaje(id, exito, error) {
+    console.log('Cargando personaje...');
+    
+    if (id > 0) {
+        let personaje = { id: id, nombre: 'Héroe', nivel: 10 };
+        exito(personaje);
+    } else {
+        error('ID inválido');
+    }
+}
+
+cargarPersonaje(1, 
+    function(personaje) {
+        console.log('Personaje cargado:', personaje);
+    },
+    function(error) {
+        console.log('Error:', error);
+    }
+);
+
+// Filtrar array con callback
+let enemigos = ['Goblin', 'Orco', 'Dragón', 'Troll'];
+function filtrarEnemigos(lista, callback) {
+    return lista.filter(callback);
+}
+
+let enemigosFuertes = filtrarEnemigos(enemigos, function(enemigo) {
+    return enemigo.length > 4;
+});
+
+console.log('Enemigos fuertes:', enemigosFuertes);
+
+// Timer con callback
+function ejecutarDespues(tiempo, callback) {
+    console.log(`Ejecutando en ${tiempo}ms...`);
+    setTimeout(callback, tiempo);
+}
+
+ejecutarDespues(1000, function() {
+    console.log('¡Tiempo completado!');
+});"></textarea>
+                                </div>
+
+                                <div class="console-output">
+                                    <div class="console-header">
+                                        <span>Consola</span>
+                                        <button class="clear-btn" onclick="clearConsole(8)">🗑️ Limpiar</button>
+                                    </div>
+                                    <div id="console-8" class="console-content"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigatePage(-1)">⬅️ Teoría</button>
+                            <div class="page-indicator">Página 2 de 2</div>
+                            <button class="page-nav-btn" onclick="navigateLevel(1)">Siguiente Nivel ➡️</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Level 9: Promises -->
+                <section class="level" id="level-9">
+                    <!-- Page 1: Theory -->
+                    <div class="level-page theory-page">
+                        <div class="level-header">
+                            <h2>Nivel 9: Promises</h2>
+                            <div class="level-badge">Avanzado</div>
+                        </div>
+                        
+                        <div class="reading-section">
+                            <h3>📖 Lectura</h3>
+                            <div class="content-card">
+                                <p>Las Promises son objetos que representan la eventual finalización (o fallo) de una operación asíncrona y su valor resultante.</p>
+                                
+                                <div class="code-example">
+                                    <pre><code>let miPromise = new Promise((resolve, reject) => {
+    let exito = true;
+    
+    if (exito) {
+        resolve('Operación exitosa');
+    } else {
+        reject('Error en la operación');
+    }
+});
+
+miPromise
+    .then(resultado => console.log(resultado))
+    .catch(error => console.log(error));</code></pre>
+                                </div>
+                                
+                                <h4>Estados de una Promise:</h4>
+                                <ul>
+                                    <li><strong>Pending:</strong> Estado inicial, ni cumplida ni rechazada</li>
+                                    <li><strong>Fulfilled:</strong> Operación completada exitosamente</li>
+                                    <li><strong>Rejected:</strong> Operación falló</li>
+                                </ul>
+                                
+                                <div class="tip-box">
+                                    <h4>💡 Consejo</h4>
+                                    <p>Las Promises evitan el "callback hell" y hacen el código asíncrono más legible. Usa <code>async/await</code> para una sintaxis aún más limpia.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigateLevel(-1)">⬅️ Nivel Anterior</button>
+                            <div class="page-indicator">Página 1 de 2</div>
+                            <button class="page-nav-btn" onclick="navigatePage(1)">Ejercicio ➡️</button>
+                        </div>
+                    </div>
+
+                    <!-- Page 2: Exercise -->
+                    <div class="level-page exercise-page">
+                        <div class="level-header">
+                            <h2>Nivel 9: Promises - Ejercicio</h2>
+                            <div class="level-badge">Práctica</div>
+                        </div>
+                        
+                        <div class="exercise-section">
+                            <h3>⚔️ Ejercicio</h3>
+                            <div class="content-card">
+                                <p>Crea Promises para simular operaciones de juego asíncronas:</p>
+                                
+                                <div class="exercise-instructions">
+                                    <h4>Instrucciones:</h4>
+                                    <ol>
+                                        <li>Crea una Promise que simule cargar datos de un servidor</li>
+                                        <li>Usa .then() y .catch() para manejar el resultado</li>
+                                        <li>Crea una Promise que simule una operación que puede fallar</li>
+                                        <li>Usa Promise.all() para múltiples operaciones</li>
+                                    </ol>
+                                </div>
+                                
+                                <div class="code-editor">
+                                    <div class="editor-header">
+                                        <span>Editor de Código</span>
+                                        <button class="run-btn" onclick="runCode(9)">▶️ Ejecutar</button>
+                                    </div>
+                                    <textarea id="editor-9" class="code-textarea" placeholder="// Promise para cargar datos
+function cargarDatos() {
+    return new Promise((resolve, reject) => {
+        console.log('Cargando datos...');
+        
+        setTimeout(() => {
+            let datos = { usuario: 'Jugador1', nivel: 25 };
+            resolve(datos);
+        }, 1000);
+    });
+}
+
+cargarDatos()
+    .then(datos => {
+        console.log('Datos cargados:', datos);
+    })
+    .catch(error => {
+        console.log('Error:', error);
+    });
+
+// Promise que puede fallar
+function operacionRiesgosa() {
+    return new Promise((resolve, reject) => {
+        let exito = Math.random() > 0.5;
+        
+        if (exito) {
+            resolve('¡Operación exitosa!');
+        } else {
+            reject('La operación falló');
+        }
+    });
+}
+
+operacionRiesgosa()
+    .then(resultado => console.log(resultado))
+    .catch(error => console.log('Error:', error));
+
+// Múltiples Promises
+let promise1 = Promise.resolve('Datos 1');
+let promise2 = Promise.resolve('Datos 2');
+
+Promise.all([promise1, promise2])
+    .then(resultados => {
+        console.log('Todos los datos:', resultados);
+    });"></textarea>
+                                </div>
+
+                                <div class="console-output">
+                                    <div class="console-header">
+                                        <span>Consola</span>
+                                        <button class="clear-btn" onclick="clearConsole(9)">🗑️ Limpiar</button>
+                                    </div>
+                                    <div id="console-9" class="console-content"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigatePage(-1)">⬅️ Teoría</button>
+                            <div class="page-indicator">Página 2 de 2</div>
+                            <button class="page-nav-btn" onclick="navigateLevel(1)">Siguiente Nivel ➡️</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Level 10: Async/Await -->
+                <section class="level" id="level-10">
+                    <!-- Page 1: Theory -->
+                    <div class="level-page theory-page">
+                        <div class="level-header">
+                            <h2>Nivel 10: Async/Await</h2>
+                            <div class="level-badge">Avanzado</div>
+                        </div>
+                        
+                        <div class="reading-section">
+                            <h3>📖 Lectura</h3>
+                            <div class="content-card">
+                                <p>Async/await es una forma más elegante de trabajar con Promises, permitiendo escribir código asíncrono que se ve como código síncrono.</p>
+                                
+                                <div class="code-example">
+                                    <pre><code>async function cargarUsuario() {
+    try {
+        const respuesta = await fetch('/api/usuario');
+        const usuario = await respuesta.json();
+        return usuario;
+    } catch (error) {
+        console.log('Error:', error);
+    }
+}
+
+// Uso
+cargarUsuario().then(usuario => {
+    console.log(usuario);
+});</code></pre>
+                                </div>
+                                
+                                <h4>Características de async/await:</h4>
+                                <ul>
+                                    <li><strong>async:</strong> Declara una función asíncrona que retorna una Promise</li>
+                                    <li><strong>await:</strong> Pausa la ejecución hasta que la Promise se resuelve</li>
+                                    <li><strong>try/catch:</strong> Manejo de errores más natural</li>
+                                    <li><strong>Legibilidad:</strong> Código más fácil de leer y entender</li>
+                                </ul>
+                                
+                                <div class="tip-box">
+                                    <h4>💡 Consejo</h4>
+                                    <p>Async/await es la forma moderna de manejar operaciones asíncronas. Siempre usa try/catch para manejar errores y evita await en bucles cuando sea posible.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigateLevel(-1)">⬅️ Nivel Anterior</button>
+                            <div class="page-indicator">Página 1 de 2</div>
+                            <button class="page-nav-btn" onclick="navigatePage(1)">Ejercicio ➡️</button>
+                        </div>
+                    </div>
+
+                    <!-- Page 2: Exercise -->
+                    <div class="level-page exercise-page">
+                        <div class="level-header">
+                            <h2>Nivel 10: Async/Await - Ejercicio</h2>
+                            <div class="level-badge">Práctica</div>
+                        </div>
+                        
+                        <div class="exercise-section">
+                            <h3>⚔️ Ejercicio</h3>
+                            <div class="content-card">
+                                <p>Convierte código con Promises a async/await:</p>
+                                
+                                <div class="exercise-instructions">
+                                    <h4>Instrucciones:</h4>
+                                    <ol>
+                                        <li>Crea una función async que simule cargar datos</li>
+                                        <li>Usa await para esperar múltiples operaciones</li>
+                                        <li>Implementa manejo de errores con try/catch</li>
+                                        <li>Crea una función que procese datos secuencialmente</li>
+                                    </ol>
+                                </div>
+                                
+                                <div class="code-editor">
+                                    <div class="editor-header">
+                                        <span>Editor de Código</span>
+                                        <button class="run-btn" onclick="runCode(10)">▶️ Ejecutar</button>
+                                    </div>
+                                    <textarea id="editor-10" class="code-textarea" placeholder="// Función async para cargar datos
+async function cargarDatosJuego() {
+    try {
+        console.log('Iniciando carga...');
+        
+        // Simular carga de datos del usuario
+        const usuario = await new Promise(resolve => {
+            setTimeout(() => resolve({ id: 1, nombre: 'Jugador' }), 500);
+        });
+        
+        // Simular carga de inventario
+        const inventario = await new Promise(resolve => {
+            setTimeout(() => resolve(['Espada', 'Escudo']), 300);
+        });
+        
+        console.log('Usuario:', usuario);
+        console.log('Inventario:', inventario);
+        
+        return { usuario, inventario };
+        
+    } catch (error) {
+        console.log('Error en la carga:', error);
+    }
+}
+
+// Función para procesar datos secuencialmente
+async function procesarDatos() {
+    const datos = await cargarDatosJuego();
+    console.log('Datos completos cargados:', datos);
+}
+
+// Ejecutar
+procesarDatos();"></textarea>
+                                </div>
+
+                                <div class="console-output">
+                                    <div class="console-header">
+                                        <span>Consola</span>
+                                        <button class="clear-btn" onclick="clearConsole(10)">🗑️ Limpiar</button>
+                                    </div>
+                                    <div id="console-10" class="console-content"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Page Navigation -->
+                        <div class="page-navigation">
+                            <button class="page-nav-btn" onclick="navigatePage(-1)">⬅️ Teoría</button>
+                            <div class="page-indicator">Página 2 de 2</div>
+                            <button class="page-nav-btn" onclick="navigateLevel(1)">Siguiente Nivel ➡️</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
