@@ -5,10 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>"The Road" A JavaScript Adventure</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=JetBrains+Mono:wght@400;600&family=Orbitron:wght@400;700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body data-theme="dark">
+    <script>
+        (function () {
+            try {
+                if (localStorage.getItem('theRoadWelcomeAccepted') === '1') {
+                    document.body.classList.add('welcome-ready');
+                } else {
+                    document.body.classList.add('welcome-gate-active');
+                }
+            } catch (e) {
+                document.body.classList.add('welcome-gate-active');
+            }
+        })();
+    </script>
+
+    <div
+        id="welcome-overlay"
+        class="welcome-overlay"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="welcome-title"
+        aria-describedby="welcome-desc"
+    >
+        <div class="welcome-modal">
+            <div class="welcome-modal__accent" aria-hidden="true"></div>
+            <p class="welcome-modal__eyebrow">vmDev · The Road</p>
+            <h2 id="welcome-title" class="welcome-modal__title">Bienvenido, forjador de código</h2>
+            <p id="welcome-desc" class="welcome-modal__lead">
+                <strong>The Road</strong> es una micro-aventura para practicar JavaScript en serio: lees una dosis de teoría,
+                escribes código en el editor y ves el resultado en la consola integrada.
+                Vas subiendo de nivel con XP y avanzando por los <strong>33 fundamentos</strong> de JavaScript
+                (referencia: artículo de Stephen Curtis y el repositorio <em>33-js-concepts</em>).
+                En esta build recorres un tramo jugable; el mapa completo es la serie de 33.
+            </p>
+            <ul class="welcome-modal__bullets" aria-label="Qué vas a hacer aquí">
+                <li>Navega teoría ↔ ejercicio dentro de cada nivel.</li>
+                <li>Pulsa <strong>Ejecutar</strong> (o Ctrl+Enter) y valida en la consola.</li>
+                <li>Gana XP al ejecutar y al completar cada prueba.</li>
+            </ul>
+            <p class="welcome-modal__hint">Si entras, quitamos el velo y tienes el tablero completo. Si pospones, la página sigue difuminada hasta que decidas.</p>
+            <div class="welcome-modal__actions">
+                <button type="button" class="welcome-btn welcome-btn--primary" id="welcome-accept">
+                    Entrar al camino
+                </button>
+                <button type="button" class="welcome-btn welcome-btn--ghost" id="welcome-defer">
+                    Más tarde
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" id="welcome-reopen" class="welcome-reopen" aria-label="Abrir mensaje de bienvenida" hidden>
+        <span class="welcome-reopen__icon" aria-hidden="true">⚔️</span>
+        <span class="welcome-reopen__text">Entrar</span>
+    </button>
+
     <div class="game-container">
+        <div class="crt-overlay" aria-hidden="true"></div>
+        <div class="vignette" aria-hidden="true"></div>
+        <canvas class="ember-canvas" id="ember-canvas" aria-hidden="true"></canvas>
         <!-- Top Navigation Bar -->
         <nav class="top-nav">
             <div class="nav-container">
@@ -23,15 +81,33 @@
                     <a href="https://github.com/leonardomso/33-js-concepts" target="_blank" class="nav-link">
                         📚 Repositorio GitHub
                     </a>
-                    <button class="nav-link" onclick="toggleTheme()">
-                        🌙 Cambiar Tema
-                    </button>
-                    <button class="nav-link" onclick="testScroll()" style="background: #ff6b6b;">
-                        🧪 Test Scroll
-                    </button>
+                    <button type="button" class="nav-link nav-link--theme" data-theme-toggle>Cambiar tema</button>
                 </div>
             </div>
         </nav>
+
+        <aside class="hud-banner" aria-label="Camino activo">
+            <div class="hud-banner__inner">
+                <p class="hud-banner__quest" id="hud-quest">Forja tu héroe: completa código y ejecuta para ganar XP.</p>
+                <div class="hud-banner__pulse" aria-hidden="true"></div>
+            </div>
+        </aside>
+
+        <div class="road-strip-wrap" aria-hidden="false">
+            <div class="road-strip-label">Camino JS — <span id="road-strip-caption">33 fundamentos</span></div>
+            <div class="road-strip" id="road-strip"></div>
+        </div>
+
+        <div class="xp-bar-wrap">
+            <div class="xp-bar-meta">
+                <span class="xp-label">EXP</span>
+                <span class="xp-value"><span id="xp-current">0</span> / <span id="xp-next">260</span></span>
+            </div>
+            <div class="xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="xp-bar">
+                <div class="xp-bar__fill" id="xp-fill"></div>
+                <div class="xp-bar__shine"></div>
+            </div>
+        </div>
 
         <!-- Header/Navigation -->
         <header class="game-header">
@@ -40,12 +116,15 @@
                 <div class="player-stats">
                     <div class="stat">Nivel: <span id="current-level">1</span></div>
                     <div class="stat">XP: <span id="current-xp">0</span></div>
-                    <div class="stat">Conceptos: <span id="concepts-learned">0</span>/33</div>
+                    <div class="stat">Nodos <span title="Fundamentos sellados">✦</span> <span id="concepts-learned">0</span>/<span id="concepts-total">33</span></div>
+                    <div class="meta-progress" title="Progreso hacia los 33 fundamentos" aria-hidden="true">
+                        <div class="meta-progress-fill"></div>
+                    </div>
                 </div>
             </div>
             <div class="game-title">
                 <h1>"The Road" A JavaScript Adventure</h1>
-                <p>Los 33 Conceptos que Todo Programador Debe Conocer</p>
+                <p>Los <strong>33 conceptos</strong> que vale dominar en JS — aquí los practicas en modo aventura: teoría, código y consola; enlaces al artículo y al repo en la barra superior.</p>
                 <div class="credits">
                     <p>Basado en el artículo de <a href="https://medium.com/@stephenthecurt/33-fundamentals-every-javascript-developer-should-know-13dd720a90d1" target="_blank">Stephen Curtis</a></p>
                 </div>
@@ -100,7 +179,7 @@ var edad = 25;</code></pre>
                         <!-- Page Navigation -->
                         <div class="page-navigation">
                             <button class="page-nav-btn" onclick="navigateLevel(-1)">⬅️ Nivel Anterior</button>
-                            <div class="page-indicator">Página 1 de 2 | Nivel 1/10</div>
+                            <div class="page-indicator">Página 1 de 2 | Nivel 1/33</div>
                             <button class="page-nav-btn" onclick="navigatePage(1)">Ejercicio ➡️</button>
                         </div>
                     </div>
@@ -156,7 +235,7 @@ console.log('Clase del héroe:', heroClass);"></textarea>
                         <!-- Page Navigation -->
                         <div class="page-navigation">
                             <button class="page-nav-btn" onclick="navigatePage(-1)">⬅️ Teoría</button>
-                            <div class="page-indicator">Página 2 de 2 | Nivel 1/10</div>
+                            <div class="page-indicator">Página 2 de 2 | Nivel 1/33</div>
                             <button class="page-nav-btn" onclick="navigateLevel(1)">Siguiente Nivel ➡️</button>
                         </div>
                     </div>
@@ -203,7 +282,7 @@ const sumar = (a, b) => a + b;</code></pre>
                         <!-- Page Navigation -->
                         <div class="page-navigation">
                             <button class="page-nav-btn" onclick="navigateLevel(-1)">⬅️ Nivel Anterior</button>
-                            <div class="page-indicator">Página 1 de 2 | Nivel 2/10</div>
+                            <div class="page-indicator">Página 1 de 2 | Nivel 2/33</div>
                             <button class="page-nav-btn" onclick="navigatePage(1)">Ejercicio ➡️</button>
                         </div>
                     </div>
@@ -267,7 +346,7 @@ console.log('Daño:', calcularDano(5, 'Espada'));"></textarea>
                         <!-- Page Navigation -->
                         <div class="page-navigation">
                             <button class="page-nav-btn" onclick="navigatePage(-1)">⬅️ Teoría</button>
-                            <div class="page-indicator">Página 2 de 2 | Nivel 2/10</div>
+                            <div class="page-indicator">Página 2 de 2 | Nivel 2/33</div>
                             <button class="page-nav-btn" onclick="navigateLevel(1)">Siguiente Nivel ➡️</button>
                         </div>
                     </div>
@@ -312,7 +391,7 @@ let mixto = ['texto', 42, true, null];</code></pre>
                         <!-- Page Navigation -->
                         <div class="page-navigation">
                             <button class="page-nav-btn" onclick="navigateLevel(-1)">⬅️ Nivel Anterior</button>
-                            <div class="page-indicator">Página 1 de 2 | Nivel 3/10</div>
+                            <div class="page-indicator">Página 1 de 2 | Nivel 3/33</div>
                             <button class="page-nav-btn" onclick="navigatePage(1)">Ejercicio ➡️</button>
                         </div>
                     </div>
@@ -371,7 +450,7 @@ console.log('Número de items:', inventario.length);"></textarea>
                         <!-- Page Navigation -->
                         <div class="page-navigation">
                             <button class="page-nav-btn" onclick="navigatePage(-1)">⬅️ Teoría</button>
-                            <div class="page-indicator">Página 2 de 2 | Nivel 3/10</div>
+                            <div class="page-indicator">Página 2 de 2 | Nivel 3/33</div>
                             <button class="page-nav-btn" onclick="navigateLevel(1)">Siguiente Nivel ➡️</button>
                         </div>
                     </div>
@@ -420,7 +499,7 @@ console.log('Número de items:', inventario.length);"></textarea>
                         <!-- Page Navigation -->
                         <div class="page-navigation">
                             <button class="page-nav-btn" onclick="navigateLevel(-1)">⬅️ Nivel Anterior</button>
-                            <div class="page-indicator">Página 1 de 2 | Nivel 4/10</div>
+                            <div class="page-indicator">Página 1 de 2 | Nivel 4/33</div>
                             <button class="page-nav-btn" onclick="navigatePage(1)">Ejercicio ➡️</button>
                         </div>
                     </div>
@@ -484,7 +563,7 @@ console.log(personaje.saludar());"></textarea>
                         <!-- Page Navigation -->
                         <div class="page-navigation">
                             <button class="page-nav-btn" onclick="navigatePage(-1)">⬅️ Teoría</button>
-                            <div class="page-indicator">Página 2 de 2 | Nivel 4/10</div>
+                            <div class="page-indicator">Página 2 de 2 | Nivel 4/33</div>
                             <button class="page-nav-btn" onclick="navigateLevel(1)">Siguiente Nivel ➡️</button>
                         </div>
                     </div>

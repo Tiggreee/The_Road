@@ -1,7 +1,10 @@
 // Utilidades para navegación y estado
 let currentLevel = 1;
 let currentPage = 1;
-const totalLevels = 10;
+/** Secciones jugables en el HTML de esta build */
+const PLAYABLE_LEVELS = 10;
+/** Fundamentos alineados con la referencia (Stephen Curtis / 33-js-concepts) */
+const TOTAL_CONCEPTS = 33;
 
 // Game State
 let playerXP = 0;
@@ -11,25 +14,198 @@ let completedLevels = new Set(); // Track completed levels
 // Scroll state
 let isScrolling = false;
 
+const ROAD_NODE_LABELS = [
+    'Vars', 'Fns', '[]', '{}', 'Scope', 'Hoist', 'Clos', 'CB', 'Prm', 'async'
+];
+
+const HUD_QUEST_LINES = [
+    'La senda JS arde: ejecuta código y doma la consola.',
+    'Lee el pergamino, luego golpea con ▶ Ejecutar.',
+    'Cada nivel claro vale oro — no dejes mobs sin derrotar.'
+];
+
+function isWelcomeBlocking() {
+    return (
+        document.body.classList.contains('welcome-gate-active') ||
+        document.body.classList.contains('welcome-deferred')
+    );
+}
+
+function buildRoadStrip() {
+    const strip = document.getElementById('road-strip');
+    if (!strip || strip.children.length > 0) return;
+    for (let i = 1; i <= PLAYABLE_LEVELS; i++) {
+        const node = document.createElement('button');
+        node.type = 'button';
+        node.className = 'road-node';
+        node.dataset.level = String(i);
+        node.title = `Ir al nivel ${i}`;
+        node.innerHTML = `<span class="road-node__ring"></span><span class="road-node__glyph">${ROAD_NODE_LABELS[i - 1]}</span>`;
+        node.addEventListener('click', () => jumpToRoadLevel(i));
+        strip.appendChild(node);
+    }
+}
+
+function jumpToRoadLevel(level) {
+    if (isWelcomeBlocking()) return;
+    const allowed = level === 1 || completedLevels.has(level - 1);
+    if (!allowed) {
+        showNotification(`Nivel ${level} cerrado — completa el anterior.`, 'error');
+        pulseGameFrame();
+        return;
+    }
+    if (currentLevel !== level || currentPage !== 1) {
+        const prev = document.getElementById(`level-${currentLevel}`);
+        if (prev) prev.style.display = 'none';
+        const next = document.getElementById(`level-${level}`);
+        if (!next) return;
+        next.style.display = 'flex';
+        next.scrollLeft = 0;
+        currentLevel = level;
+        currentPage = 1;
+        updatePageIndicator(1, 2);
+        updateUI();
+        pulseGameFrame();
+    }
+}
+
+function updateRoadStrip() {
+    document.querySelectorAll('.road-node').forEach((node) => {
+        const n = Number(node.dataset.level);
+        node.classList.remove('road-node--current', 'road-node--done', 'road-node--locked');
+        if (completedLevels.has(n)) node.classList.add('road-node--done');
+        if (n > 1 && !completedLevels.has(n - 1)) node.classList.add('road-node--locked');
+        if (n === currentLevel) node.classList.add('road-node--current');
+    });
+    const caption = document.getElementById('road-strip-caption');
+    if (caption) {
+        caption.textContent = `tramo ${currentLevel} · ${completedLevels.size}/${TOTAL_CONCEPTS} sellos`;
+    }
+}
+
+function pulseGameFrame() {
+    document.body.classList.add('pulse-frame');
+    setTimeout(() => document.body.classList.remove('pulse-frame'), 520);
+}
+
+function updateHudQuest() {
+    const el = document.getElementById('hud-quest');
+    if (!el) return;
+    el.textContent = HUD_QUEST_LINES[(currentLevel + currentPage) % HUD_QUEST_LINES.length];
+}
+
+/** XP hasta el siguiente respiro narrativo (~ 13 ejecuciones + victorias) */
+function updateXpMeter() {
+    const cap = Math.max(260, playerXP + 40 + conceptsLearned * 30);
+    const pct = Math.min(100, (playerXP / cap) * 100);
+    const fill = document.getElementById('xp-fill');
+    const bar = document.getElementById('xp-bar');
+    const xc = document.getElementById('xp-current');
+    const xn = document.getElementById('xp-next');
+    if (fill) fill.style.width = `${pct}%`;
+    if (bar) bar.setAttribute('aria-valuenow', String(Math.round(pct)));
+    if (xc) xc.textContent = String(playerXP);
+    if (xn) xn.textContent = String(cap);
+}
+
+const WELCOME_STORAGE_KEY = 'theRoadWelcomeAccepted';
+
+function initWelcomeGate() {
+    const overlay = document.getElementById('welcome-overlay');
+    const btnAccept = document.getElementById('welcome-accept');
+    const btnDefer = document.getElementById('welcome-defer');
+    const btnReopen = document.getElementById('welcome-reopen');
+
+    function syncWelcomeLayers() {
+        const ready = document.body.classList.contains('welcome-ready');
+        const deferred = document.body.classList.contains('welcome-deferred');
+        const gate = document.body.classList.contains('welcome-gate-active');
+
+        if (overlay) {
+            const hideOverlay = ready || deferred;
+            overlay.classList.toggle('welcome-overlay--hidden', hideOverlay);
+            overlay.setAttribute('aria-hidden', hideOverlay ? 'true' : 'false');
+        }
+        if (btnReopen) btnReopen.hidden = ready || gate || !deferred;
+    }
+
+    function welcomeAccept() {
+        try {
+            localStorage.setItem(WELCOME_STORAGE_KEY, '1');
+        } catch (e) {
+            /* ignore */
+        }
+        document.body.classList.remove('welcome-gate-active', 'welcome-deferred');
+        document.body.classList.add('welcome-ready');
+        syncWelcomeLayers();
+        const gameMain = document.querySelector('.game-container');
+        if (gameMain) gameMain.removeAttribute('aria-hidden');
+        requestAnimationFrame(() => {
+            const stage = document.querySelector('.game-world');
+            if (stage) {
+                stage.setAttribute('tabindex', '-1');
+                stage.focus({ preventScroll: true });
+            }
+        });
+    }
+
+    function welcomeDefer() {
+        document.body.classList.remove('welcome-gate-active');
+        document.body.classList.add('welcome-deferred');
+        syncWelcomeLayers();
+        btnReopen?.focus();
+    }
+
+    function welcomeReopenModal() {
+        document.body.classList.remove('welcome-deferred');
+        document.body.classList.add('welcome-gate-active');
+        syncWelcomeLayers();
+        btnAccept?.focus();
+    }
+
+    btnAccept?.addEventListener('click', welcomeAccept);
+    btnDefer?.addEventListener('click', welcomeDefer);
+    btnReopen?.addEventListener('click', welcomeReopenModal);
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && document.body.classList.contains('welcome-gate-active')) {
+            welcomeDefer();
+        }
+    });
+
+    const gameMain = document.querySelector('.game-container');
+    if (document.body.classList.contains('welcome-ready')) {
+        if (gameMain) gameMain.removeAttribute('aria-hidden');
+    } else if (gameMain) {
+        gameMain.setAttribute('aria-hidden', 'true');
+    }
+
+    syncWelcomeLayers();
+}
+
 // Initialize the game
 document.addEventListener('DOMContentLoaded', function() {
+    initWelcomeGate();
+    buildRoadStrip();
+    loadProgress();
+    setupHorizontalScroll();
     updateUI();
     setupCodeEditors();
     loadTheme();
     setupKeyboardShortcuts();
     setupScrollDetection();
-    loadProgress(); // Load completed levels
-    setupHorizontalScroll(); // Setup horizontal scroll functionality
-    
-    // Debug: Test scroll functionality
-    setTimeout(() => {
-        console.log('Testing scroll functionality...');
-        const testLevel = document.getElementById('level-1');
-        if (testLevel) {
-            console.log('Level 1 found, scroll width:', testLevel.scrollWidth, 'client width:', testLevel.clientWidth);
-        }
-    }, 1000);
+    bindThemeToggle();
+    updateRoadStrip();
+    updateHudQuest();
+    updateXpMeter();
+    initEmbers();
 });
+
+function bindThemeToggle() {
+    document.querySelectorAll('[data-theme-toggle]').forEach((btn) => {
+        btn.addEventListener('click', toggleTheme);
+    });
+}
 
 // Update UI elements
 function updateUI() {
@@ -44,21 +220,25 @@ function updateUI() {
     if (currentXPElement) currentXPElement.textContent = playerXP;
     if (conceptsLearnedElement) conceptsLearnedElement.textContent = conceptsLearned;
     
-    // Update all page indicators with current level
-    const pageIndicators = document.querySelectorAll('.page-indicator');
-    pageIndicators.forEach(indicator => {
-        const currentText = indicator.textContent;
-        if (currentText.includes('Página')) {
-            const pageInfo = currentText.split('|')[0].trim();
-            indicator.textContent = `${pageInfo} | Nivel ${displayLevel}/${totalLevels}`;
-        }
-    });
-    
+    syncPageIndicatorsForCurrentLevel();
+
     // Update navigation buttons based on completion status
     updateNavigationButtons();
     
     // Update level lock states
     updateLevelLockStates();
+    updateRoadStrip();
+    updateHudQuest();
+    updateXpMeter();
+}
+
+/** Solo los indicadores del nivel visible (antes se pisaban todos con el nivel actual). */
+function syncPageIndicatorsForCurrentLevel() {
+    const lv = document.getElementById(`level-${currentLevel}`);
+    if (!lv) return;
+    lv.querySelectorAll('.page-indicator').forEach((indicator) => {
+        indicator.textContent = `Página ${currentPage} de 2 | Nivel ${currentLevel}/${TOTAL_CONCEPTS}`;
+    });
 }
 
 // Update navigation buttons based on level completion
@@ -120,6 +300,7 @@ function getCurrentPage() {
 
 // Navigate between pages within a level
 function navigatePage(direction) {
+    if (isWelcomeBlocking()) return;
     const currentLevelElement = document.getElementById(`level-${currentLevel}`);
     if (!currentLevelElement) {
         console.log('No level element found for navigation');
@@ -148,6 +329,7 @@ function navigatePage(direction) {
     setTimeout(() => {
         currentPage = targetPage;
         updatePageIndicator(currentPage, 2);
+        updateHudQuest();
         updateNavigationButtons();
         isScrolling = false;
         console.log(`Current page updated to ${currentPage}, final scroll position: ${currentLevelElement.scrollLeft}`);
@@ -156,8 +338,9 @@ function navigatePage(direction) {
 
 // Navigate between levels
 function navigateLevel(direction) {
+    if (isWelcomeBlocking()) return;
     const newLevel = currentLevel + direction;
-    if (newLevel < 1 || newLevel > totalLevels) return;
+    if (newLevel < 1 || newLevel > PLAYABLE_LEVELS) return;
     
     // Check if we can navigate to next level
     if (direction > 0 && currentPage === 2 && !completedLevels.has(currentLevel)) {
@@ -182,7 +365,10 @@ function navigateLevel(direction) {
         updatePageIndicator(1, 2);
         updateUI();
         updateNavigationButtons();
-        
+        updateRoadStrip();
+        updateHudQuest();
+        pulseGameFrame();
+
         // Add completion indicator if level is completed
         if (completedLevels.has(newLevel)) {
             newLevelElement.classList.add('level-completed');
@@ -197,7 +383,7 @@ function updatePageIndicator(currentPage, totalPages) {
     const indicators = document.querySelectorAll('.page-indicator');
     const displayLevel = currentLevel === 0 ? 'Intro' : currentLevel;
     indicators.forEach(indicator => {
-        indicator.textContent = `Página ${currentPage} de ${totalPages} | Nivel ${displayLevel}/${totalLevels}`;
+        indicator.textContent = `Página ${currentPage} de ${totalPages} | Nivel ${displayLevel}/${TOTAL_CONCEPTS}`;
     });
     
     // Update scroll indicators
@@ -212,11 +398,8 @@ function setupHorizontalScroll() {
     // Show only the current level initially
     const levels = document.querySelectorAll('.level');
     levels.forEach((level, index) => {
-        if (index === 0) {
-            level.style.display = 'flex';
-        } else {
-            level.style.display = 'none';
-        }
+        const ln = index + 1;
+        level.style.display = ln === currentLevel ? 'flex' : 'none';
     });
     
     // Add scroll event listener for page detection
@@ -228,6 +411,7 @@ function setupHorizontalScroll() {
                 if (newPage !== currentPage) {
                     currentPage = newPage;
                     updatePageIndicator(currentPage, 2);
+                    updateHudQuest();
                     updateNavigationButtons();
                     updateScrollIndicators();
                 }
@@ -382,74 +566,77 @@ function setupCodeEditors() {
 
 // Run code in the editor
 function runCode(levelId) {
+    if (isWelcomeBlocking()) return;
     const editor = document.getElementById(`editor-${levelId}`);
-    const console = document.getElementById(`console-${levelId}`);
-    
-    if (!editor || !console) return;
-    
+    const outputPanel = document.getElementById(`console-${levelId}`);
+
+    if (!editor || !outputPanel) return;
+
     const code = editor.value;
-    
-    // Clear console
-    console.innerHTML = '';
-    
+    outputPanel.innerHTML = '';
+
+    const logs = [];
+    const stringify = (a) =>
+        a.map((x) => {
+            if (typeof x === 'object' && x !== null) {
+                try {
+                    return JSON.stringify(x);
+                } catch {
+                    return String(x);
+                }
+            }
+            return String(x);
+        }).join(' ');
+
+    const orig = {
+        log: console.log,
+        error: console.error,
+        warn: console.warn,
+    };
+
     try {
-        // Create a safe execution environment
-        const originalConsoleLog = console.log;
-        const originalConsoleError = console.error;
-        const originalConsoleWarn = console.warn;
-        
-        const logs = [];
-        
-        // Override console methods to capture output
-        console.log = function(...args) {
-            logs.push({ type: 'log', content: args.join(' ') });
-        };
-        
-        console.error = function(...args) {
-            logs.push({ type: 'error', content: args.join(' ') });
-        };
-        
-        console.warn = function(...args) {
-            logs.push({ type: 'warn', content: args.join(' ') });
-        };
-        
-        // Execute the code
+        console.log = (...args) => logs.push({ type: 'log', content: stringify(args) });
+        console.error = (...args) => logs.push({ type: 'error', content: stringify(args) });
+        console.warn = (...args) => logs.push({ type: 'warn', content: stringify(args) });
+
         const result = eval(code);
-        
-        // Display logs
-        logs.forEach(log => {
-            const logElement = document.createElement('div');
-            logElement.className = `log ${log.type}`;
-            logElement.textContent = log.content;
-            console.appendChild(logElement);
+
+        logs.forEach((log) => {
+            const row = document.createElement('div');
+            row.className = `log ${log.type}`;
+            row.textContent = log.content;
+            outputPanel.appendChild(row);
         });
-        
-        // Display return value if any
-        if (result !== undefined) {
+
+        if (result !== undefined && result !== window) {
             const resultElement = document.createElement('div');
             resultElement.className = 'log success';
             resultElement.textContent = `Resultado: ${result}`;
-            console.appendChild(resultElement);
+            outputPanel.appendChild(resultElement);
         }
-        
-        // Award XP for successful execution
-        if (logs.length > 0) {
+
+        if (logs.length > 0 || result !== undefined) {
             playerXP += 10;
+            outputPanel.closest('.game-container')?.classList.add('xp-flash');
+            setTimeout(() => outputPanel.closest('.game-container')?.classList.remove('xp-flash'), 400);
             updateUI();
         }
-        
-        // Check if exercise is completed
+
+        const validateDelay = levelId >= 9 ? 2300 : 180;
         setTimeout(() => {
             if (validateExercise(levelId)) {
                 completeLevel(levelId);
             }
-        }, 500);
-        
+        }, validateDelay);
     } catch (error) {
         const errorElement = document.createElement('div');
         errorElement.className = 'log error';
         errorElement.textContent = `Error: ${error.message}`;
-        console.appendChild(errorElement);
+        outputPanel.appendChild(errorElement);
+    } finally {
+        console.log = orig.log;
+        console.error = orig.error;
+        console.warn = orig.warn;
     }
 }
 
@@ -491,6 +678,35 @@ function validateExercise(levelId) {
         case 4: // Objects
             isValid = code.includes('{') && code.includes('console.log') && consoleText.length > 0;
             break;
+        case 5:
+            isValid =
+                consoleText.length > 10 &&
+                (code.includes('let') || code.includes('const')) &&
+                code.includes('function') &&
+                code.includes('console.log');
+            break;
+        case 6:
+            isValid = code.includes('var') && code.includes('function') && consoleText.length > 5;
+            break;
+        case 7:
+            isValid =
+                code.includes('return') &&
+                code.includes('function') &&
+                consoleText.includes('XP') &&
+                consoleText.length > 20;
+            break;
+        case 8:
+            isValid =
+                code.includes('function') &&
+                (consoleText.includes('completado') || consoleText.includes('Cargando')) &&
+                consoleText.length > 10;
+            break;
+        case 9:
+            isValid = code.includes('Promise') && code.includes('.then') && consoleText.length > 10;
+            break;
+        case 10:
+            isValid = code.includes('async') && code.includes('await') && consoleText.length > 15;
+            break;
         default:
             isValid = code.length > 0 && consoleText.length > 0;
     }
@@ -514,7 +730,12 @@ function completeLevel(levelId) {
         
         // Show completion notification
         showNotification(`¡Nivel ${levelId} completado! +100 XP`, 'success');
-        
+
+        const peaks = [3, 6, 9, 11, 22];
+        if (peaks.includes(conceptsLearned)) {
+            showNotification(`Ascenso · ${conceptsLearned}/${TOTAL_CONCEPTS} fundamentos`, 'success');
+        }
+
         // Update navigation buttons
         updateNavigationButtons();
         
@@ -525,7 +746,7 @@ function completeLevel(levelId) {
         }
         
         // Unlock next level if available
-        if (currentLevel < totalLevels) {
+        if (currentLevel < PLAYABLE_LEVELS) {
             showNotification('¡Nivel siguiente desbloqueado!', 'success');
         }
     }
@@ -586,6 +807,7 @@ document.addEventListener('keydown', function(e) {
     const active = document.activeElement;
     const isInput = active && (active.tagName === 'TEXTAREA' || (active.tagName === 'INPUT' && !active.readOnly) || active.isContentEditable);
     if (isInput) return;
+    if (isWelcomeBlocking()) return;
 
     if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
         navigateLevel(-1);
@@ -655,33 +877,14 @@ function autoLoad() {
 // Auto-save every 30 seconds
 setInterval(autoSave, 30000);
 
-// Load saved state on page load
-window.addEventListener('load', autoLoad);
-
 // Save on page unload
 window.addEventListener('beforeunload', autoSave);
 
-// Progress tracking
-function updateProgress() {
-    const progress = (conceptsLearned / totalLevels) * 100;
-    
-    // Update progress bar if it exists
-    const progressBar = document.querySelector('.progress-bar');
-    if (progressBar) {
-        progressBar.style.width = `${progress}%`;
-    }
-    
-    // Check for level completion
-    if (conceptsLearned === totalLevels) {
-        showNotification('¡Felicidades! Has completado todos los conceptos de JavaScript! 🎉', 'success');
-    }
-}
-
 // Call updateProgress whenever XP or concepts change
 const originalUpdateUI = updateUI;
-updateUI = function() {
+updateUI = function () {
     originalUpdateUI();
-    updateProgress();
+    updateProgressTrack();
 };
 
 // Theme Management
@@ -693,26 +896,26 @@ function toggleTheme() {
     body.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
     
-    // Update theme button text
-    const themeBtn = document.querySelector('.nav-link[onclick="toggleTheme()"]');
-    if (themeBtn) {
-        themeBtn.innerHTML = newTheme === 'dark' ? '☀️ Tema Claro' : '🌙 Tema Oscuro';
-    }
+    document.querySelectorAll('[data-theme-toggle]').forEach((themeBtn) => {
+        themeBtn.textContent =
+            newTheme === 'dark' ? '☀️ Tema claro' : '🌙 Tema oscuro';
+    });
 }
 
 function loadTheme() {
     const savedTheme = localStorage.getItem('theme') || 'dark';
     document.body.setAttribute('data-theme', savedTheme);
     
-    const themeBtn = document.querySelector('.nav-link[onclick="toggleTheme()"]');
-    if (themeBtn) {
-        themeBtn.innerHTML = savedTheme === 'dark' ? '☀️ Tema Claro' : '🌙 Tema Oscuro';
-    }
+    document.querySelectorAll('[data-theme-toggle]').forEach((themeBtn) => {
+        themeBtn.textContent =
+            savedTheme === 'dark' ? '☀️ Tema claro' : '🌙 Tema oscuro';
+    });
 }
 
 // Keyboard Shortcuts
 function setupKeyboardShortcuts() {
     document.addEventListener('keydown', function(e) {
+        if (isWelcomeBlocking()) return;
         // Ctrl/Cmd + Enter to run code
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
             const currentEditor = document.querySelector(`#level-${currentLevel} .code-textarea`);
@@ -737,26 +940,37 @@ function setupKeyboardShortcuts() {
     });
 }
 
-// Enhanced Progress Tracking
-function updateProgress() {
-    const progress = (conceptsLearned / totalLevels) * 100;
-    
-    // Update progress bar if it exists
-    const progressBar = document.querySelector('.progress-bar');
-    if (progressBar) {
-        progressBar.style.width = `${progress}%`;
+function updateProgressTrack() {
+    const pct = Math.min(100, (conceptsLearned / TOTAL_CONCEPTS) * 100);
+    const progressBar = document.querySelector('.meta-progress-fill');
+    if (progressBar) progressBar.style.width = `${pct}%`;
+
+    const totalLbl = document.getElementById('concepts-total');
+    if (totalLbl) totalLbl.textContent = String(TOTAL_CONCEPTS);
+
+    if (
+        conceptsLearned === PLAYABLE_LEVELS &&
+        PLAYABLE_LEVELS < TOTAL_CONCEPTS &&
+        !sessionStorage.getItem('road-playable-complete-toast')
+    ) {
+        sessionStorage.setItem('road-playable-complete-toast', '1');
+        showNotification(
+            '¡Has completado todos los niveles de esta versión! La referencia lista 33 fundamentos — el camino seguirá creciendo.',
+            'success'
+        );
+        unlockAchievement('Heroe del Camino JS');
+        document.body.classList.add('campaign-complete');
     }
-    
-    // Check for level completion
-    if (conceptsLearned === totalLevels) {
-        showNotification('¡Felicidades! Has completado todos los conceptos de JavaScript! 🎉', 'success');
-        unlockAchievement('Master JavaScript Developer');
-    }
-    
-    // Check for milestones
-    const milestones = [5, 10, 15, 20, 25, 30];
-    if (milestones.includes(conceptsLearned)) {
-        showNotification(`¡Milestone alcanzado! ${conceptsLearned} conceptos aprendidos`, 'success');
+
+    if (
+        conceptsLearned === TOTAL_CONCEPTS &&
+        TOTAL_CONCEPTS > 0 &&
+        !sessionStorage.getItem('road-all-33-toast')
+    ) {
+        sessionStorage.setItem('road-all-33-toast', '1');
+        showNotification('¡Los 33 fundamentos completados! 🏆', 'success');
+        unlockAchievement('Maestro de los 33 fundamentos');
+        document.body.classList.add('campaign-complete');
     }
 }
 
@@ -811,4 +1025,58 @@ function updateCurrentPageIndicator() {
     if (currentPageIndex >= 0 && currentPageIndex < 2) {
         updatePageIndicator(currentPageIndex + 1, 2);
     }
+}
+
+function initEmbers() {
+    const canvas = document.getElementById('ember-canvas');
+    if (!canvas || !canvas.getContext) return;
+    const ctx = canvas.getContext('2d');
+    const particles = [];
+    const P = 48;
+
+    function resize() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.floor(window.innerWidth * dpr);
+        canvas.height = Math.floor(window.innerHeight * dpr);
+        canvas.style.width = `${window.innerWidth}px`;
+        canvas.style.height = `${window.innerHeight}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    for (let i = 0; i < P; i++) {
+        const vmHue = i % 3 === 0 ? [34, 211, 238] : i % 3 === 1 ? [139, 92, 246] : [37, 99, 235];
+        particles.push({
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            r: 0.5 + Math.random() * 2.2,
+            vy: 0.3 + Math.random() * 1.2,
+            vx: (Math.random() - 0.5) * 0.4,
+            a: 0.15 + Math.random() * 0.45,
+            rgb: vmHue,
+        });
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+
+    function tick() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        ctx.clearRect(0, 0, w, h);
+        particles.forEach((p) => {
+            p.y -= p.vy;
+            p.x += p.vx + Math.sin((p.y + Date.now() * 0.02) * 0.01) * 0.15;
+            if (p.y < -4) {
+                p.y = h + 4;
+                p.x = Math.random() * w;
+            }
+            ctx.beginPath();
+            const [cr, cg, cb] = p.rgb;
+            ctx.fillStyle = `rgba(${cr}, ${cg}, ${cb}, ${p.a})`;
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
 }
