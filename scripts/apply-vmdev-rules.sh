@@ -45,13 +45,11 @@ done
 
 echo "Listo: copiados ${#FILES[@]} .mdc a .cursor/rules/"
 echo ""
-echo "Siguiente (global en Cursor):"
+echo "Siguiente (reglas globales del IDE):"
 if [[ -f "${CONSOLIDATED}" ]]; then
-  echo "  1) Cursor → Settings → Rules (User Rules)"
+  echo "  1) Configuración del editor → Reglas de usuario"
   echo "  2) Pega todo desde: ${CONSOLIDATED}"
 else
-  echo "  No hay ${CONSOLIDATED}; pega tus User Rules donde las tengas."
+  echo "  No hay ${CONSOLIDATED}; pega tus reglas globales donde las tengas."
 fi
-echo ""
-echo '  Toggle en el chat (si tus reglas lo definen): tiggreeeon / tiggreeeoff'
 echo ""

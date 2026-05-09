@@ -1,10 +1,9 @@
 <#
 .SYNOPSIS
-  Copia vmDev PRO (global-user-rules-consolidated.md) al portapapeles para pegarla en Cursor → Settings → Rules.
+  Copia vmDev PRO (global-user-rules-consolidated.md) al portapapeles para pegarlo en Reglas de usuario del IDE.
 
 .NOTAS
-  Cursor no permite inyectar User Rules por archivo de configuración en disco de forma oficial.
-  Esto reduce el trabajo a: abrir Cursor → Rules → Ctrl+V → guardar.
+  Los editores suelen gestionar las reglas globales solo desde la interfaz; este script reduce el paso a copiar y pegar.
 
 .EXAMPLE
   .\scripts\copy-vmdev-user-rules-to-clipboard.ps1
@@ -23,6 +22,6 @@ Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.Clipboard]::SetText($txt)
 
 Write-Host ""
-Write-Host "Listo: texto de User Rules copiado al portapapeles (UTF-8)." -ForegroundColor Green
-Write-Host "  Cursor → Settings → Rules (User Rules) → pega con Ctrl+V y guarda."
+Write-Host "Listo: texto de reglas de usuario copiado al portapapeles (UTF-8)." -ForegroundColor Green
+Write-Host "  Configuración del editor → Reglas de usuario → pega con Ctrl+V y guarda."
 Write-Host ""

@@ -1,1 +1,4 @@
 node_modules/
+
+# Perfil local del editor (reglas .mdc); no versionar en el repo público.
+.cursor/

@@ -1,19 +1,19 @@
 <#
 .SYNOPSIS
-  Copia las reglas .mdc de vmDev desde tu perfil Cursor al repo actual (The_Road).
+  Copia las reglas .mdc de vmDev desde tu perfil local al repo actual (The_Road).
 
 .DESCRIPTION
   Origen habitual: %USERPROFILE%\.cursor\rules\
   Destino: <repo>\.cursor\rules\
 
-  No sustituye "User Rules" en Cursor Settings — para eso Cursor no expone comando oficial.
-  Tras ejecutar esto, abre global-user-rules-consolidated.md y pégalo si aún no está en Rules.
+  Las reglas “globales” del IDE no siempre se pueden sincronizar por archivo; si usas
+  un consolidado en markdown, ábrelo y pégalo donde el editor permita reglas de usuario.
 
 .PARAMETER DryRun
   Solo muestra qué haría sin copiar.
 
 .PARAMETER CopyUserRulesToClipboard
-  Tras sincronizar, copia global-user-rules-consolidated.md al portapapeles (pega una vez en Cursor → Rules).
+  Tras sincronizar, copia global-user-rules-consolidated.md al portapapeles para pegar en reglas de usuario.
 
 .EXAMPLE
   .\scripts\apply-vmdev-rules.ps1
@@ -63,25 +63,23 @@ Copy-Item -Path (Join-Path $ProfileRules "*.mdc") -Destination $Dest -Force
 
 Write-Host "Listo: copiados $($m.Count) .mdc a .cursor/rules/" -ForegroundColor Green
 Write-Host ""
-Write-Host "Siguiente (global en Cursor):" -ForegroundColor Cyan
+Write-Host "Siguiente (reglas globales del IDE):" -ForegroundColor Cyan
 if (Test-Path -LiteralPath $Consolidated) {
-  Write-Host "  1) Abre Cursor -> Settings -> Rules (User Rules)"
+  Write-Host "  1) Abre la configuración del editor → Reglas de usuario"
   Write-Host "  2) Pega todo el contenido de:"
   Write-Host "     $Consolidated"
 }
 else {
   Write-Host "  No encontré global-user-rules-consolidated.md bajo tu perfil."
-  Write-Host "  Si lo tienes en otro sitio, pégalo igual en Cursor -> Settings -> Rules."
+  Write-Host "  Si lo tienes en otro sitio, pégalo donde el editor exponga reglas de usuario."
 }
-Write-Host ""
-Write-Host '  Toggle de sesión en el chat (si tus reglas lo definen): tiggreeeon / tiggreeeoff'
 Write-Host ""
 
 if ($CopyUserRulesToClipboard -and -not $DryRun) {
   if (Test-Path -LiteralPath $Consolidated) {
     Add-Type -AssemblyName System.Windows.Forms
     [System.Windows.Forms.Clipboard]::SetText((Get-Content -LiteralPath $Consolidated -Raw -Encoding UTF8))
-    Write-Host "User Rules también copiadas al portapapeles — pega en Cursor → Settings → Rules." -ForegroundColor Green
+    Write-Host "Reglas consolidadas copiadas al portapapeles — pégalas en Reglas de usuario del IDE." -ForegroundColor Green
     Write-Host ""
   }
 }
